@@ -1,0 +1,49 @@
+{
+  "name": "geosearch",
+  "version": "0.1.0",
+  "description": "AI Geospatial Search Tool",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bryanbill/geo.git"
+  },
+  "keywords": [
+    "AI",
+    "Geospatial"
+  ],
+  "author": "Brian Omondi <bryanomondi254@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bryanbill/geo/issues"
+  },
+  "homepage": "https://github.com/bryanbill/geo#readme",
+  "dependencies": {
+    "@elastic/elasticsearch": "^8.17.1",
+    "@google/generative-ai": "^0.24.0",
+    "@turf/turf": "^7.2.0",
+    "axios": "^1.8.3",
+    "body-parser": "^1.20.3",
+    "bullmq": "^5.43.0",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "ioredis": "^5.6.0",
+    "node-cache": "^5.1.2",
+    "openai": "^4.87.3",
+    "pg": "^8.14.0",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/pg": "^8.11.11",
+    "nodemon": "^3.1.9"
+  }
+}
