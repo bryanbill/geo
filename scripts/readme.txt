@@ -6,6 +6,11 @@ the **s. So, I wrote a script to automate the process.
 `ingest.sh` is a bash script reading the input from sources.txt and
 ingesting the data to PostGIS. 
 
+The `sources.txt` file contains the metadata of the datasets. The format is:
+```
+<name> <category> <description> <url>
+```
+
 It uses `ogr2ogr` you need to have gdal installed.
 
 Currently the script is a bit slow (it works though). It downloads the datasets
