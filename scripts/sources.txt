@@ -1,0 +1,5 @@
+roads_ke "roads" "Roads in Kenya" https://s3.dualstack.us-east-1.amazonaws.com/production-raw-data-api/ISO3/KEN/roads/lines/hotosm_ken_roads_lines_geojson.zip
+roads_ug "roads" "Roads in Uganda" https://s3.dualstack.us-east-1.amazonaws.com/production-raw-data-api/ISO3/UGA/roads/lines/hotosm_uga_roads_lines_geojson.zip
+
+health_ke "health" "Health facilities in Kenya" https://s3.dualstack.us-east-1.amazonaws.com/production-raw-data-api/ISO3/KEN/health_facilities/points/hotosm_ken_health_facilities_points_geojson.zip
+health_ug "health" "Health facilities in Uganda" https://s3.dualstack.us-east-1.amazonaws.com/production-raw-data-api/ISO3/UGA/health_facilities/points/hotosm_uga_health_facilities_points_geojson.zip
