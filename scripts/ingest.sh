@@ -66,16 +66,31 @@ for line in $(cat "$SOURCE_FILE"); do
     echo "Downloading: $URL"
     curl -L --progress-bar -o "$FILE_PATH" "$URL"
 
-    case "$FILE_PATH" in
-    *.zip)
+    # Check file type and handle accordingly
+    if [[ "$FILE_PATH" == *.zip ]]; then
         unzip -o "$FILE_PATH" -d "$TEMP_DIR"
         FILE_PATH=$(find "$TEMP_DIR" -name "*.shp" -o -name "*.geojson" -o -name "*.csv" | head -n 1)
-        ;;
-    *.tar.gz)
+    elif [[ "$FILE_PATH" == *.tar.gz ]]; then
         tar -xzf "$FILE_PATH" -C "$TEMP_DIR"
         FILE_PATH=$(find "$TEMP_DIR" -name "*.shp" -o -name "*.geojson" -o -name "*.csv" | head -n 1)
-        ;;
-    esac
+    else
+        # Handle direct files (geojson, shp, csv)
+        if [[ "$FILE_PATH" != *.shp && "$FILE_PATH" != *.geojson && "$FILE_PATH" != *.csv ]]; then
+            echo "Error: Unsupported file format. Skipping."
+            continue
+        fi
+        # For shapefiles, ensure all related files are present
+        if [[ "$FILE_PATH" == *.shp ]]; then
+            BASE_NAME=$(basename "$FILE_PATH" .shp)
+            SHX_FILE="$TEMP_DIR/${BASE_NAME}.shx"
+            DBF_FILE="$TEMP_DIR/${BASE_NAME}.dbf"
+
+            if [[ ! -f "$SHX_FILE" || ! -f "$DBF_FILE" ]]; then
+                echo "Error: Missing required shapefile components (.shx or .dbf). Skipping."
+                continue
+            fi
+        fi
+    fi
 
     if [[ -z "$FILE_PATH" ]]; then
         echo "Error: No valid file found after extraction. Skipping."

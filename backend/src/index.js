@@ -4,7 +4,7 @@ import pg from "pg";
 import dotenv from "dotenv";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import NodeCache from "node-cache";
-import winston from "winston";
+import winston, { Logger } from "winston";
 import cors from "cors";
 
 dotenv.config({
@@ -91,7 +91,12 @@ async function processQuery(query) {
         the values e.g width of a road, temperature range etc by using a regex or substring function. An exmple 
         is 'NULLIF(regexp_replace(width, '[^0-9\.]', '', 'g'), '')::decimal' to extract the width from a string
       - Cast the numerical columns to decimal or integer as necessary.
-
+      - Some scenarios may require you to pick continous features e.g when getting the longest road, you may need to
+        join the features to return the whole road. Apply this logic to any other scenario that requires it.
+      - In all the columns in the selected table, rename the column that contains the 'name' of the feature, the values should be
+        a string not a number. This is to ensure that the name is human readable.
+      - Use iLIKE for case insensitive search.
+      - Make sure the SQL generated is compatible with latest PostgreSQL version. Use STANDARD SQL.
 
       The database contains the following tables:
       ${schemaDescription}
@@ -108,7 +113,8 @@ async function processQuery(query) {
         and joining related tables.
       - Remove any irrelevant table and column references.
       - Convert geom field from WKT, WKB to GeoJSON using ST_AsGeoJSON(geom) as geojson function. Ensure 
-        to alias the column as geojson.
+        to alias the column as geojson. Add the row values to the properties object of the geojson object.
+      
       
       Return the full SQL Query only as raw text. Remove language or code snippets or any other formatting.
       Query: "${query}"`;
@@ -129,6 +135,8 @@ app.post("/search", async (req, res) => {
   try {
     const { query } = req.body;
     const sql = await processQuery(query);
+
+    logger.info(`Generated SQL: ${sql}`);
 
     const { rows: postgresResults } = await pgClient.query(sql);
 

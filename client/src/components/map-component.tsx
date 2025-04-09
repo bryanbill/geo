@@ -33,8 +33,6 @@ const GeospatialMap: React.FC = () => {
 
   const { results } = useSearch();
 
-  console.log(results);
-
   useEffect(() => {
     if (!mapRef.current) return;
 
@@ -67,13 +65,29 @@ const GeospatialMap: React.FC = () => {
     for (const result of results) {
       if (result.geojson) {
         const geojsonFormat = new GeoJSON();
-        const feature = geojsonFormat.readFeature(result.geojson, {
-          featureProjection: "EPSG:3857",
-        });
+        const feature = geojsonFormat.readFeature(
+          typeof result.geojson === "string"
+            ? result.geojson
+            : JSON.stringify(result.geojson),
+          {
+            featureProjection: "EPSG:3857",
+          }
+        );
 
         if (feature) {
-          if (Array.isArray(feature)) vectorSource.addFeatures(feature);
-          else vectorSource.addFeature(feature);
+          if (Array.isArray(feature)) {
+            for (const f of feature) {
+              f.setProperties({
+                ...result,
+              });
+            }
+            vectorSource.addFeatures(feature);
+          } else {
+            feature.setProperties({
+              ...result,
+            });
+            vectorSource.addFeature(feature);
+          }
         }
       }
     }
@@ -101,8 +115,6 @@ const GeospatialMap: React.FC = () => {
       },
     });
 
-    console.log(vectorLayer);
-
     map.addLayer(vectorLayer);
     vectorLayerRef.current = vectorLayer;
 
@@ -116,7 +128,19 @@ const GeospatialMap: React.FC = () => {
         },
       });
     }
-  }, [results]);
+
+    map.once("click", (event) => {
+      map.forEachFeatureAtPixel(event.pixel, (feature) => {
+        const properties = feature.getProperties();
+        console.log(properties);
+      });
+    });
+
+    return () => {
+      map.removeLayer(vectorLayer);
+      map.un("click", () => {});
+    };
+  }, [results.length]);
 
   return (
     <ContextMenu>
